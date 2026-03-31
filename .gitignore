@@ -4,3 +4,4 @@ dist/
 credentials.json
 downloads/
 *.log
+.DS_Store

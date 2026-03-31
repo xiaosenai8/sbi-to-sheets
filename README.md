@@ -1,6 +1,3 @@
-# 
-#00_temp
-
 # sbi-to-sheets
 
 SBI証券の保有証券CSVをダウンロードし、Googleスプレッドシートへ転記するツールです。
