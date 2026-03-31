@@ -43,9 +43,8 @@ npm install
 5. 転記先スプレッドシートを、サービスアカウントのメールアドレスに「編集者」で共有
 
 参考サイト
-
-  [サービスアカウントで連携する · HonKit](https://docs.biztex.co.jp/cobit-docs/google_spreadsheet_settings/for_serviceaccount.html)　
-  ※4の手順が無いので注意
+  - [サービスアカウントで連携する · HonKit](https://docs.biztex.co.jp/cobit-docs/google_spreadsheet_settings/for_serviceaccount.html)　
+  - 4の手順が無いので注意
 
 ### 3. `.env` を作る
 
