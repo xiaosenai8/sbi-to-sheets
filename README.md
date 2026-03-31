@@ -78,7 +78,7 @@ sbi-to-sheets/
 │   ├── index.ts            # 全体の実行開始。ダウンロードと転記を順に呼ぶ
 │   ├── sbi-download.ts     # Google Chrome でCSVをダウンロードし、Downloadsから取り込む
 │   ├── sheets-upload.ts    # CSVを読み込み、Googleスプレッドシートへ書き込む
-│   └── debug-nav.ts        # SBI画面の遷移やリンク確認用のデバッグスクリプト
+│   └── browser-config.ts   # `--browser` 引数を解釈する
 ├── .env                    # 実際の設定値を入れる環境変数ファイル
 ├── .env.example            # `.env` 作成用の見本
 ├── credentials.json        # Google Service Account の認証キー

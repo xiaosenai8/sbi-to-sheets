@@ -61,12 +61,11 @@ async function main(): Promise<void> {
   let csvPath: string | null = null;
 
   try {
-    // Step 1: SBI証券からCSVダウンロード
+    // CSV取得とSheets反映を分けると、失敗位置が分かりやすい。
     logSection('Step 1/2 CSV取得');
     csvPath = await downloadSbiCsv();
     logDone('CSV取得');
 
-    // Step 2: Googleスプレッドシートに書き込み
     logSection('Step 2/2 Sheets反映');
     await uploadToSheets(csvPath);
     logDone('Sheets反映');
@@ -88,7 +87,7 @@ async function main(): Promise<void> {
 
     process.exit(1);
   } finally {
-    // 一時CSVファイルを削除
+    // 作業用コピーだけ残ると次回の判定を邪魔するので毎回消す。
     if (csvPath && fs.existsSync(csvPath)) {
       fs.unlinkSync(csvPath);
       logInfo('CSV削除');

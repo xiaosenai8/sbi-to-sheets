@@ -44,6 +44,7 @@ function getLatestCsvCandidate(minMtimeMs: number): CsvCandidate | null {
     throw new Error(`ダウンロードフォルダが見つかりません: ${USER_DOWNLOADS_DIR}`);
   }
 
+  // 実行開始後に更新されたCSVだけを見る。
   const candidates = fs.readdirSync(USER_DOWNLOADS_DIR)
     .filter((name) => name.toLowerCase().endsWith('.csv'))
     .map((name) => {
@@ -74,6 +75,7 @@ async function waitForDownloadedCsv(minMtimeMs: number): Promise<string> {
       const isStillDownloading = fs.existsSync(currentDownloadPath);
 
       if (!isStillDownloading) {
+        // サイズが連続で変わらなければ、保存完了とみなす。
         if (
           previousCandidate &&
           previousCandidate.path === candidate.path &&
@@ -103,6 +105,7 @@ export async function downloadSbiCsv(): Promise<string> {
     fs.mkdirSync(DOWNLOAD_DIR, { recursive: true });
   }
 
+  // 開いたURL以降の新規ダウンロードだけを拾うための基準時刻。
   const startedAt = Date.now();
 
   console.log('[SBI] ブラウザ起動');
@@ -112,6 +115,7 @@ export async function downloadSbiCsv(): Promise<string> {
   const downloadedCsvPath = await waitForDownloadedCsv(startedAt);
 
   const savePath = path.join(DOWNLOAD_DIR, `holdings_${Date.now()}.csv`);
+  // 元ファイルは Downloads に残さず、作業用コピーだけを使う。
   fs.copyFileSync(downloadedCsvPath, savePath);
   fs.unlinkSync(downloadedCsvPath);
   console.log(`[SBI] CSV保存: ${path.basename(savePath)}`);

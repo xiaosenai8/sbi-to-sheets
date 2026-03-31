@@ -12,14 +12,14 @@ export async function uploadToSheets(csvPath: string): Promise<void> {
     throw new Error('環境変数 GOOGLE_SHEET_NAME が設定されていません');
   }
 
-  // Google Service Account 認証
+  // サービスアカウントで直接 Sheets API を叩く。
   const auth = new google.auth.GoogleAuth({
     keyFile: keyPath,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
   const sheets = google.sheets({ version: 'v4', auth });
 
-  // シート名の存在確認
+  // シート名の typo を早めに検知する。
   console.log('[Sheets] 情報取得');
   const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
   const sheet = spreadsheet.data.sheets?.find(
@@ -33,19 +33,19 @@ export async function uploadToSheets(csvPath: string): Promise<void> {
   const spreadsheetTitle = spreadsheet.data.properties?.title ?? spreadsheetId;
   console.log(`[Sheets] 書込先: "${spreadsheetTitle}" / "${sheetName}"`);
 
-  // CSVを読み込み（Shift-JIS → UTF-8）
+  // SBIのCSVは Shift-JIS 前提。
   console.log('[Sheets] CSV読込');
   const rawBuffer = fs.readFileSync(csvPath);
   const csvText = iconv.decode(rawBuffer, 'Shift_JIS');
 
-  // CSVをパースして2次元配列に変換
+  // Sheets API にそのまま渡せる 2 次元配列へ変換。
   const rows = csvText
     .split('\n')
     .map((line) => line.replace(/\r$/, ''))  // 改行コード正規化
     .filter((line) => line.length > 0)        // 空行除去
     .map((line) => parseCsvLine(line));
 
-  // A2以降をクリア（A1の説明テキストは保持）
+  // A1 は固定文言用なので残す。
   const clearRange = `${sheetName}!A2:Z2000`;
   await sheets.spreadsheets.values.clear({
     spreadsheetId,
@@ -53,7 +53,7 @@ export async function uploadToSheets(csvPath: string): Promise<void> {
   });
   console.log('[Sheets] 既存データ削除完了');
 
-  // A2からデータを書き込み
+  // 数値や日付は Sheets 側に解釈させる。
   const writeRange = `${sheetName}!A2`;
   await sheets.spreadsheets.values.update({
     spreadsheetId,
